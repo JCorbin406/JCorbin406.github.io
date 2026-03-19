@@ -1,0 +1,18 @@
+[
+  {
+    "title": "100-m Scale Tetrahedral Truss Structures Made from LHT-1 Lunar Regolith Simulant Feedstock",
+    "authors": "B. Nunan, J. Corbin, Z. Arzt, J. Seymour, R. Wainner, C. Hessel, M. Stern",
+    "venue": "AIAA SCITECH 2024 Forum",
+    "year": 2024,
+    "link": "",
+    "bibtex": "@inproceedings{nunan2024tetrahedral,\n  title={100-m Scale Tetrahedral Truss Structures Made from LHT-1 Lunar Regolith Simulant Feedstock},\n  author={Nunan, B. and Corbin, J. and Arzt, Z. and Seymour, J. and Wainner, R. and Hessel, C. and Stern, M.},\n  booktitle={AIAA SCITECH 2024 Forum},\n  year={2024}\n}"
+  },
+  {
+    "title": "Sensitivity of Micromilling Responses to Grain Variations in Wire Arc Additively Manufactured Aluminum Alloy 4043",
+    "authors": "Z. Gao, J. F. Nowak, J. Corbin, L. Delgado, J. Samuel",
+    "venue": "Journal of Micro and Nano-Manufacturing",
+    "year": 2020,
+    "link": "",
+    "bibtex": "@article{gao2020sensitivity,\n  title={Sensitivity of Micromilling Responses to Grain Variations in Wire Arc Additively Manufactured Aluminum Alloy 4043},\n  author={Gao, Z. and Nowak, J. F. and Corbin, J. and Delgado, L. and Samuel, J.},\n  journal={Journal of Micro and Nano-Manufacturing},\n  year={2020}\n}"
+  }
+]

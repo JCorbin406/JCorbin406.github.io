@@ -1,0 +1,67 @@
+---
+interface Props {
+  phrases?: string[];
+}
+
+const {
+  phrases = [
+    'multi-agent safety',
+    'control barrier functions',
+    'robotic manufacturing',
+    'space robotics',
+    'deployable structures',
+  ],
+} = Astro.props;
+---
+
+<span class="typing-container" data-phrases={JSON.stringify(phrases)}>
+  <span class="typing-text" id="typing-text"></span><span class="cursor">█</span>
+</span>
+
+<script>
+  const container = document.querySelector('.typing-container') as HTMLElement;
+  const textEl = document.getElementById('typing-text')!;
+  const phrases: string[] = JSON.parse(container.dataset.phrases || '[]');
+
+  let phraseIndex = 0;
+  let charIndex = 0;
+  let deleting = false;
+
+  function tick() {
+    const current = phrases[phraseIndex];
+
+    if (!deleting) {
+      textEl.textContent = current.slice(0, charIndex + 1);
+      charIndex++;
+      if (charIndex >= current.length) {
+        deleting = true;
+        setTimeout(tick, 2000);
+        return;
+      }
+      setTimeout(tick, 80 + Math.random() * 40);
+    } else {
+      textEl.textContent = current.slice(0, charIndex - 1);
+      charIndex--;
+      if (charIndex <= 0) {
+        deleting = false;
+        phraseIndex = (phraseIndex + 1) % phrases.length;
+        setTimeout(tick, 500);
+        return;
+      }
+      setTimeout(tick, 40);
+    }
+  }
+
+  if (phrases.length > 0) tick();
+</script>
+
+<style>
+  .typing-container {
+    display: inline;
+  }
+
+  .typing-text {
+    color: var(--amber);
+    text-shadow: 0 0 8px rgba(255, 176, 0, 0.5);
+  }
+</style>

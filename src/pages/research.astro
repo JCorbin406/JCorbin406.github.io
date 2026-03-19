@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ResearchCard from '../components/ResearchCard.astro';
+---
+
+<BaseLayout title="Research | Johnathan (Jack) Corbin">
+  <div class="page-container">
+    <h1>// research</h1>
+
+    <p class="text-dim" style="margin-bottom: 2rem;">
+      My work spans multi-agent autonomy, UAS deployment, robotic systems, and space structures.
+    </p>
+
+    <div class="research-grid">
+      <ResearchCard
+        title="Multi-Agent Control"
+        icon="◆"
+        description="Research on control frameworks for teams of robots operating in shared environments, including safety-critical approaches and coordination."
+      />
+
+      <ResearchCard
+        title="UAS Deployment"
+        icon="◆"
+        description="Unmanned aerial systems design, deployment, and autonomy. Includes DRXC mentorship of autonomous VTOL vehicle development."
+      />
+
+      <ResearchCard
+        title="Additive Manufacturing"
+        icon="◆"
+        description="Wire arc additive manufacturing with industrial robot arms. Path planning and material property analysis for printed parts."
+      />
+
+      <ResearchCard
+        title="Robotics"
+        icon="◆"
+        description="Broad robotics work: deployable robotic antenna systems for UUVs, autonomous industrial systems, and rapid prototyping."
+      />
+
+      <ResearchCard
+        title="Orbital Mechanics"
+        icon="◆"
+        description="Space structures, deployable systems, and lunar ISRU. Tetrahedral truss structures from regolith simulant feedstock."
+      />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .research-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .research-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

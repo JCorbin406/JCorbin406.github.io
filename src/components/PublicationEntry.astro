@@ -1,0 +1,90 @@
+---
+interface Props {
+  title: string;
+  authors: string;
+  venue: string;
+  year: number;
+  link?: string;
+  bibtex?: string;
+}
+
+const { title, authors, venue, year, link, bibtex } = Astro.props;
+---
+
+<div class="pub-entry">
+  <div class="pub-title">
+    {link ? <a href={link} target="_blank" rel="noopener">{title}</a> : title}
+  </div>
+  <div class="pub-authors">{authors}</div>
+  <div class="pub-venue">{venue}, {year}</div>
+  {bibtex && (
+    <details class="pub-bibtex">
+      <summary class="text-dim">BibTeX</summary>
+      <pre><code>{bibtex}</code></pre>
+    </details>
+  )}
+</div>
+
+<style>
+  .pub-entry {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+  }
+
+  .pub-entry:last-child {
+    border-bottom: none;
+  }
+
+  .pub-title {
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    color: var(--green);
+  }
+
+  .pub-title a {
+    color: var(--green);
+  }
+
+  .pub-authors {
+    font-size: 0.85rem;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+  }
+
+  .pub-venue {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .pub-bibtex {
+    margin-top: 0.5rem;
+  }
+
+  .pub-bibtex summary {
+    cursor: pointer;
+    font-size: 0.8rem;
+    user-select: none;
+  }
+
+  .pub-bibtex summary:hover {
+    color: var(--green);
+  }
+
+  .pub-bibtex pre {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 3px;
+    overflow-x: auto;
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .pub-bibtex pre code {
+    background: none;
+    border: none;
+    padding: 0;
+  }
+</style>

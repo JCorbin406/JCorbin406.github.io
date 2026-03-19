@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About | Johnathan (Jack) Corbin">
+  <div class="page-container">
+    <h1>// about</h1>
+
+    <section class="section">
+      <div class="panel id-badge">
+        <div class="id-badge-header">[ ID BADGE ]</div>
+        <div class="id-badge-body">
+          <div class="id-badge-photo">
+            <img src="/JCorbin_square.png" alt="Johnathan (Jack) Corbin" />
+          </div>
+          <div class="id-badge-info">
+            <div class="id-row"><span class="id-key">name</span><span class="id-sep">:</span><span>Johnathan (Jack) Corbin</span></div>
+            <div class="id-row"><span class="id-key">role</span><span class="id-sep">:</span><span>PhD Student</span></div>
+            <div class="id-row"><span class="id-key">dept</span><span class="id-sep">:</span><span>Aerospace Engineering</span></div>
+            <div class="id-row"><span class="id-key">inst</span><span class="id-sep">:</span><span>Georgia Institute of Technology</span></div>
+            <div class="id-row"><span class="id-key">status</span><span class="id-sep">:</span><span class="text-amber">ACTIVE</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>$ cat bio.txt</h2>
+      <div class="panel">
+        <p>
+          I'm a Robotics PhD student at the Georgia Institute of Technology in the Daniel
+          Guggenheim School of Aerospace Engineering, where my research focuses on multi-agent
+          control and UAS deployment.
+        </p>
+        <p>
+          Before Georgia Tech, I spent three years as a Senior Engineer at Physical Sciences,
+          Inc. (PSI), working on deployable space structures, antennas, and robotic systems
+          for defense and space applications. I hold a BS in Aeronautical Engineering from
+          Rensselaer Polytechnic Institute, where I conducted research in wire arc additive
+          manufacturing and autonomous industrial systems.
+        </p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>$ cat education.log</h2>
+      <div class="panel">
+        <div class="timeline-entry">
+          <span class="text-amber">PhD Robotics</span> — Georgia Institute of Technology
+          <span class="text-dim">| 2023 – Present</span>
+          <p class="timeline-desc">Qualifying exam passed March 2025.</p>
+        </div>
+        <div class="timeline-entry">
+          <span class="text-amber">MS Aerospace Engineering</span> — Georgia Institute of Technology
+          <span class="text-dim">| Expected August 2026</span>
+        </div>
+        <div class="timeline-entry">
+          <span class="text-amber">BS Aeronautical Engineering</span> — Rensselaer Polytechnic Institute
+          <span class="text-dim">| 2016 – 2020</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>$ cat experience.log</h2>
+      <div class="panel">
+        <div class="timeline-entry">
+          <span class="text-amber">Senior Engineer</span> — Physical Sciences, Inc. (PSI)
+          <span class="text-dim">| 2020 – 2023</span>
+          <p class="timeline-desc">Deployable technologies R&D: antennas, space structures, robotic systems, shock/vibration damping. SBIR/STTR proposals for DoD.</p>
+        </div>
+        <div class="timeline-entry">
+          <span class="text-amber">Undergraduate Research Assistant</span> — Manufacturing Innovation Center, RPI
+          <span class="text-dim">| 2017 – 2020</span>
+          <p class="timeline-desc">Autonomous industrial systems: wind turbine assembly, robotic welding, wire arc additive manufacturing.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>$ ls skills/</h2>
+      <div class="skills-grid">
+        <code>MATLAB</code>
+        <code>Python</code>
+        <code>C++</code>
+        <code>Java</code>
+        <code>ROS</code>
+        <code>LaTeX</code>
+        <code>Arduino</code>
+        <code>NX</code>
+        <code>Solidworks</code>
+        <code>COMSOL</code>
+        <code>Fusion 360</code>
+        <code>Orbital Mechanics</code>
+        <code>Additive Manufacturing</code>
+        <code>Machining</code>
+        <code>Robotics</code>
+        <code>Microcontrollers</code>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>$ download</h2>
+      <p>
+        <a href="/JohnathanCorbin-Resume.pdf" class="cv-link">[ Download CV (PDF) ]</a>
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .timeline-entry {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.08);
+    font-size: 0.9rem;
+  }
+
+  .timeline-entry:last-child {
+    border-bottom: none;
+  }
+
+  .timeline-desc {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 0.3rem;
+    margin-bottom: 0;
+  }
+
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .skills-grid code {
+    font-size: 0.8rem;
+  }
+
+  .cv-link {
+    font-size: 1rem;
+    text-shadow: var(--glow-md);
+  }
+
+  .id-badge {
+    overflow: hidden;
+  }
+
+  .id-badge-header {
+    color: var(--amber);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 8px rgba(255, 176, 0, 0.4);
+  }
+
+  .id-badge-body {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .id-badge-photo {
+    flex-shrink: 0;
+  }
+
+  .id-badge-photo img {
+    width: 140px;
+    height: 175px;
+    object-fit: cover;
+    border: 2px solid var(--green);
+    display: block;
+    box-shadow: 0 0 12px rgba(0, 255, 65, 0.15);
+  }
+
+  .id-badge-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  .id-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+
+  .id-key {
+    color: var(--amber);
+    font-weight: 700;
+    min-width: 55px;
+    text-align: right;
+  }
+
+  .id-sep {
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 768px) {
+    .id-badge-body {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .id-key {
+      text-align: left;
+    }
+
+    .id-row {
+      justify-content: center;
+    }
+  }
+</style>

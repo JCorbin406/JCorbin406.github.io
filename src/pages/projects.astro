@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+---
+
+<BaseLayout title="Projects | Johnathan (Jack) Corbin">
+  <div class="page-container">
+    <h1>// projects</h1>
+
+    <p class="text-dim" style="margin-bottom: 2rem;">
+      A selection of projects spanning robotics, autonomy, and engineering.
+    </p>
+
+    <div class="projects-grid">
+      <ProjectCard
+        title="Adrift"
+        description="A 3rd-person puzzle platformer where you control gravity and fight aliens. Built as part of Georgia Tech's Video Game Design course."
+        tags={["game-dev", "Unity", "puzzle-platformer"]}
+        links={[
+          { label: "itch.io", href: "https://geminiduality.itch.io/adrift" },
+          { label: "GitHub", href: "https://github.com/JCorbin406/Adrift" }
+        ]}
+      >
+        <video slot="media" autoplay muted loop playsinline src="/RampartStudios_Adrift_Trailer.mp4"></video>
+      </ProjectCard>
+
+      <ProjectCard
+        title="Kamaji"
+        description="A flexible multi-agent simulation environment for autonomous systems research. Features modular agent architecture, CBF safety filters, auction-based fairness, and PID/RL controllers."
+        tags={["Python", "simulation", "multi-agent", "controls"]}
+        links={[
+          { label: "GitHub", href: "https://github.com/JCorbin406/Kamaji" },
+          { label: "Docs", href: "https://jcorbin406.github.io/Kamaji/" }
+        ]}
+      >
+        <img slot="media" src="/KamajiLogo.png" alt="Kamaji logo" />
+      </ProjectCard>
+
+      <ProjectCard
+        title="AMERICA"
+        description="Senior capstone Mars lander mission proposal at RPI. Led orbital mechanics analysis including launch windows, Mars rendezvous trajectories, and reentry dynamics. Full spacecraft design across 10 engineering subsystems."
+        tags={["MATLAB", "orbital-mechanics", "spacecraft-design", "capstone"]}
+        links={[
+          { label: "GitHub", href: "https://github.com/JCorbin406/MANE-4850" }
+        ]}
+      >
+        <img slot="media" src="/AMERICA.png" alt="AMERICA project" />
+      </ProjectCard>
+
+      <ProjectCard
+        title="Project Alpha"
+        description="Placeholder description for the first project. Replace with real project details, goals, and outcomes."
+        tags={["robotics", "control"]}
+      >
+        <div slot="media" class="media-placeholder">
+          <span class="text-dim">[ image / video ]</span>
+        </div>
+      </ProjectCard>
+
+      <ProjectCard
+        title="Project Beta"
+        description="Placeholder description for the second project. Replace with real project details, goals, and outcomes."
+        tags={["autonomy", "multi-agent"]}
+      >
+        <div slot="media" class="media-placeholder">
+          <span class="text-dim">[ image / video ]</span>
+        </div>
+      </ProjectCard>
+
+      <ProjectCard
+        title="Project Gamma"
+        description="Placeholder description for the third project. Replace with real project details, goals, and outcomes."
+        tags={["manufacturing", "CAD"]}
+      >
+        <div slot="media" class="media-placeholder">
+          <span class="text-dim">[ image / video ]</span>
+        </div>
+      </ProjectCard>
+
+      <ProjectCard
+        title="Project Delta"
+        description="Placeholder description for the fourth project. Replace with real project details, goals, and outcomes."
+        tags={["simulation", "analysis"]}
+      >
+        <div slot="media" class="media-placeholder">
+          <span class="text-dim">[ image / video ]</span>
+        </div>
+      </ProjectCard>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .media-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 255, 65, 0.02);
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 768px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

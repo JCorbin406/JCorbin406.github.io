@@ -1,0 +1,129 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  tags?: string[];
+  links?: { label: string; href: string }[];
+}
+
+const { title, description, tags = [], links = [] } = Astro.props;
+---
+
+<div class="project-card panel">
+  <div class="project-media">
+    <slot name="media">
+      <div class="media-placeholder">
+        <span class="text-dim">[ media ]</span>
+      </div>
+    </slot>
+  </div>
+  <div class="project-body">
+    <h3><span class="text-amber">▸</span> {title}</h3>
+    <p>{description}</p>
+    {tags.length > 0 && (
+      <div class="project-tags">
+        {tags.map(tag => <span class="tag">{tag}</span>)}
+      </div>
+    )}
+    {links.length > 0 && (
+      <div class="project-links">
+        {links.map(link => <a href={link.href} target="_blank" rel="noopener noreferrer" class="project-link">{link.label}</a>)}
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  .project-card:hover {
+    border-color: rgba(0, 255, 65, 0.5);
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.05);
+  }
+
+  .project-media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-bottom: 1px solid var(--panel-border);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .project-media :global(img),
+  .project-media :global(video),
+  .project-media :global(iframe) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .media-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 255, 65, 0.02);
+    font-size: 0.85rem;
+  }
+
+  .project-body {
+    padding-top: 1rem;
+  }
+
+  .project-body h3 {
+    margin-bottom: 0.75rem;
+  }
+
+  .project-body p {
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    border: 1px solid var(--panel-border);
+    border-radius: 3px;
+    padding: 0.15rem 0.5rem;
+  }
+
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+
+  .project-link {
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .project-link:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  @media (max-width: 768px) {
+    .project-media {
+      aspect-ratio: 16 / 10;
+    }
+  }
+</style>

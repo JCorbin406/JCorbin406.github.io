@@ -1,0 +1,25 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="text-dim">&copy; {year} Johnathan (Jack) Corbin. Built with Astro.</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--panel-border);
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 0.75rem;
+  }
+
+  .footer-inner {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+</style>

@@ -1,0 +1,219 @@
+<canvas id="particle-canvas"></canvas>
+
+<script>
+  const canvas = document.getElementById('particle-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+
+  let width = 0;
+  let height = 0;
+  const isMobile = window.innerWidth < 768;
+  const NUM_AGENTS = isMobile ? 20 : 40;
+  const MAX_SPEED = 1.5;
+  const OBSTACLE_RADIUS = 100;
+  const SAFETY_MARGIN = 20;
+  const R_SAFE = OBSTACLE_RADIUS + SAFETY_MARGIN;
+  const ALPHA = 2.0;
+  const CONNECTION_DIST = 120;
+
+  let mouseX = -9999;
+  let mouseY = -9999;
+  let virtualAngle = 0;
+  let obstacleX = -9999;
+  let obstacleY = -9999;
+
+  interface Agent {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    targetAngle: number;
+  }
+
+  let agents: Agent[] = [];
+
+  function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+  }
+
+  function initAgents() {
+    agents = [];
+    for (let i = 0; i < NUM_AGENTS; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      agents.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: Math.cos(angle) * 0.5,
+        vy: Math.sin(angle) * 0.5,
+        targetAngle: angle,
+      });
+    }
+  }
+
+  function getObstacle(): [number, number] {
+    if (isMobile) {
+      virtualAngle += 0.005;
+      const cx = width / 2 + Math.cos(virtualAngle) * width * 0.2;
+      const cy = height / 2 + Math.sin(virtualAngle * 0.7) * height * 0.15;
+      return [cx, cy];
+    }
+    return [mouseX, mouseY];
+  }
+
+  function clampSpeed(vx: number, vy: number, max: number): [number, number] {
+    const speed = Math.sqrt(vx * vx + vy * vy);
+    if (speed > max) {
+      return [vx / speed * max, vy / speed * max];
+    }
+    return [vx, vy];
+  }
+
+  function update() {
+    const [ox, oy] = getObstacle();
+    obstacleX = ox;
+    obstacleY = oy;
+
+    for (const agent of agents) {
+      // 1. Wander: drift target angle, accelerate toward it
+      agent.targetAngle += (Math.random() - 0.5) * 0.3;
+      agent.vx += Math.cos(agent.targetAngle) * 0.05;
+      agent.vy += Math.sin(agent.targetAngle) * 0.05;
+
+      // 2. Speed clamp
+      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, MAX_SPEED);
+
+      // 3. CBF avoidance
+      const dx = agent.x - ox;
+      const dy = agent.y - oy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist > 0 && dist < R_SAFE * 3) {
+        const nx = dx / dist;
+        const ny = dy / dist;
+        const h = dist - R_SAFE;
+        const vDotN = agent.vx * nx + agent.vy * ny;
+        const constraint = vDotN + ALPHA * h;
+
+        if (constraint < 0) {
+          const correction = -constraint + 0.5;
+          agent.vx += nx * correction;
+          agent.vy += ny * correction;
+        }
+
+        // Hard safety: push out if inside barrier
+        if (h < 0) {
+          const push = (-h / R_SAFE) * 2;
+          agent.vx += nx * push;
+          agent.vy += ny * push;
+        }
+      }
+
+      // 4. Re-clamp speed (allow 1.5x during avoidance)
+      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, MAX_SPEED * 1.5);
+
+      // 5. Integrate & wrap
+      agent.x += agent.vx;
+      agent.y += agent.vy;
+
+      if (agent.x < 0) agent.x += width;
+      if (agent.x > width) agent.x -= width;
+      if (agent.y < 0) agent.y += height;
+      if (agent.y > height) agent.y -= height;
+    }
+  }
+
+  function draw() {
+    // Semi-transparent clear for trails
+    ctx.fillStyle = 'rgba(10, 10, 10, 0.15)';
+    ctx.fillRect(0, 0, width, height);
+
+    // Connection lines
+    for (let i = 0; i < agents.length; i++) {
+      for (let j = i + 1; j < agents.length; j++) {
+        const dx = agents[i].x - agents[j].x;
+        const dy = agents[i].y - agents[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECTION_DIST) {
+          const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
+          ctx.strokeStyle = `rgba(0, 255, 65, ${alpha})`;
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(agents[i].x, agents[i].y);
+          ctx.lineTo(agents[j].x, agents[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Obstacle radius visualization
+    const showCircle = isMobile || obstacleX !== -9999;
+    if (showCircle) {
+      ctx.setLineDash([6, 4]);
+
+      // Inner circle: OBSTACLE_RADIUS
+      ctx.beginPath();
+      ctx.arc(obstacleX, obstacleY, OBSTACLE_RADIUS, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(0, 255, 65, 0.15)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Outer circle: R_SAFE (safety margin)
+      ctx.beginPath();
+      ctx.arc(obstacleX, obstacleY, R_SAFE, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(0, 255, 65, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+    }
+
+    // Agent dots
+    for (const agent of agents) {
+      ctx.beginPath();
+      ctx.arc(agent.x, agent.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = '#00ff41';
+      ctx.shadowColor = '#00ff41';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // Event listeners
+  window.addEventListener('resize', () => {
+    resize();
+  });
+
+  if (!isMobile) {
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    window.addEventListener('mouseleave', () => {
+      mouseX = -9999;
+      mouseY = -9999;
+    });
+  }
+
+  resize();
+  initAgents();
+  loop();
+</script>
+
+<style>
+  #particle-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+</style>

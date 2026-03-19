@@ -1,0 +1,177 @@
+---
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+
+const links = [
+  { href: '/', label: 'home' },
+  { href: '/about', label: 'about' },
+  { href: '/research', label: 'research' },
+  { href: '/projects', label: 'projects' },
+  { href: '/publications', label: 'publications' },
+  { href: '/contact', label: 'contact' },
+];
+
+function isActive(href: string, current: string): boolean {
+  if (href === '/') return current === '/' || current === '';
+  return current.startsWith(href);
+}
+---
+
+<nav class="nav">
+  <div class="nav-inner">
+    <span class="nav-prompt">
+      <span class="text-green">jack</span><span class="text-dim">@</span><span class="text-green">corbin</span><span class="text-dim">:~$</span>
+      <span class="text-dim">cd</span>
+    </span>
+
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <ul class="nav-links" id="nav-links">
+      {links.map(link => (
+        <li>
+          <a
+            href={link.href}
+            class:list={['nav-link', { active: isActive(link.href, currentPath) }]}
+          >
+            [{link.label}]
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</nav>
+
+<script>
+  const hamburger = document.getElementById('hamburger')!;
+  const navLinks = document.getElementById('nav-links')!;
+
+  hamburger.addEventListener('click', () => {
+    const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+    hamburger.setAttribute('aria-expanded', String(!expanded));
+    navLinks.classList.toggle('open');
+    hamburger.classList.toggle('open');
+  });
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(10, 10, 10, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--panel-border);
+    height: var(--nav-height);
+  }
+
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .nav-prompt {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 0.25rem;
+    align-items: center;
+  }
+
+  .nav-link {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    padding: 0.25rem 0.4rem;
+    border-radius: 3px;
+    transition: color 0.2s, text-shadow 0.2s;
+  }
+
+  .nav-link:hover {
+    color: var(--green);
+    text-shadow: var(--glow-sm);
+  }
+
+  .nav-link.active {
+    color: var(--green);
+    text-shadow: var(--glow-md);
+  }
+
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    background: none;
+    border: 1px solid var(--panel-border);
+    border-radius: 3px;
+    padding: 6px;
+    cursor: pointer;
+    margin-left: auto;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: var(--green);
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  .hamburger.open span:nth-child(1) {
+    transform: rotate(45deg) translate(4px, 4px);
+  }
+
+  .hamburger.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(4px, -4px);
+  }
+
+  @media (max-width: 768px) {
+    .hamburger {
+      display: flex;
+    }
+
+    .nav-links {
+      display: none;
+      position: absolute;
+      top: var(--nav-height);
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      background: rgba(10, 10, 10, 0.95);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 0.5rem 0;
+    }
+
+    .nav-links.open {
+      display: flex;
+    }
+
+    .nav-link {
+      padding: 0.6rem 1.5rem;
+      font-size: 0.9rem;
+      width: 100%;
+      display: block;
+    }
+  }
+</style>

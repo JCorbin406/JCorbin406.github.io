@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Contact | Johnathan (Jack) Corbin">
+  <div class="page-container">
+    <h1>// contact</h1>
+
+    <div class="panel terminal-contact">
+      <div class="contact-row">
+        <span class="contact-key text-amber">email</span>
+        <span class="contact-sep">:</span>
+        <a href="mailto:jackcorbin8@gmail.com">jackcorbin8@gmail.com</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-key text-amber">github</span>
+        <span class="contact-sep">:</span>
+        <a href="https://github.com/JCorbin406" target="_blank" rel="noopener">github.com/JCorbin406</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-key text-amber">linkedin</span>
+        <span class="contact-sep">:</span>
+        <a href="https://linkedin.com/in/johnathan-corbin-058077147/" target="_blank" rel="noopener">linkedin.com/in/johnathan-corbin-058077147</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-key text-amber">location</span>
+        <span class="contact-sep">:</span>
+        <span>Atlanta, GA</span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-key text-amber">office</span>
+        <span class="contact-sep">:</span>
+        <span>CODA Building, Georgia Tech</span>
+      </div>
+    </div>
+
+    <p class="text-dim" style="margin-top: 2rem; font-size: 0.85rem;">
+      Feel free to reach out about research collaborations, open positions, or just to chat about robotics.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .terminal-contact {
+    max-width: 500px;
+  }
+
+  .contact-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 255, 65, 0.08);
+    font-size: 0.9rem;
+    align-items: baseline;
+  }
+
+  .contact-row:last-child {
+    border-bottom: none;
+  }
+
+  .contact-key {
+    min-width: 80px;
+    text-align: right;
+    font-weight: 700;
+  }
+
+  .contact-sep {
+    color: var(--text-dim);
+  }
+</style>
