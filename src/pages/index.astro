@@ -15,8 +15,19 @@ import TypingAnimation from '../components/TypingAnimation.astro';
       </p>
     </section>
 
+    <section class="section panel intro">
+      <h2>// welcome</h2>
+      <p>
+        I'm a Robotics PhD student at Georgia Tech in the Daniel Guggenheim School of
+        Aerospace Engineering. My research focuses on multi-agent control and safety —
+        developing algorithms that let teams of autonomous systems operate together without
+        colliding or violating constraints.
+        <a href="/about">more about me →</a>
+      </p>
+    </section>
+
     <section class="section panel explainer">
-      <h2>// what_is_this</h2>
+      <h2>// background_simulation</h2>
       <p>
         The particles behind this page are running a <strong>Control Barrier Function (CBF)</strong>
         simulation — the same math I use to keep teams of robots from colliding.
@@ -44,6 +55,18 @@ import TypingAnimation from '../components/TypingAnimation.astro';
     <section class="section">
       <h2>// recent_news</h2>
       <ul class="news-list">
+        <li>
+          <span class="news-date text-amber">[2026.08]</span>
+          Received MS in Aerospace Engineering from Georgia Tech
+        </li>
+        <li>
+          <span class="news-date text-amber">[2026.01]</span>
+          Submitted "Allocating Corrective Control to Mitigate Multi-agent Safety Violations Under Private Preferences" to IEEE RA-L
+        </li>
+        <li>
+          <span class="news-date text-amber">[2025.03]</span>
+          Passed qualifying exam
+        </li>
         <li>
           <span class="news-date text-amber">[2024.01]</span>
           Co-authored paper on lunar regolith truss structures at AIAA SCITECH 2024
@@ -100,7 +123,7 @@ import TypingAnimation from '../components/TypingAnimation.astro';
 
   .news-list li {
     padding: 0.6rem 0;
-    border-bottom: 1px solid rgba(0, 255, 65, 0.08);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.08);
     font-size: 0.85rem;
   }
 

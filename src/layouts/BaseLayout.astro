@@ -23,6 +23,12 @@ const currentPath = Astro.url.pathname;
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <script is:inline>
+      (function() {
+        const theme = localStorage.getItem('theme');
+        if (theme) document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
 
     <!-- Open Graph -->
     <meta property="og:title" content={title} />

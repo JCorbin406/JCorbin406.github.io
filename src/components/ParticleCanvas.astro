@@ -8,12 +8,26 @@
   let height = 0;
   const isMobile = window.innerWidth < 768;
   const NUM_AGENTS = isMobile ? 20 : 40;
-  const MAX_SPEED = 1.5;
+  const NOMINAL_SPEED = 1.125;
+  const MAX_SPEED = 2.0;
   const OBSTACLE_RADIUS = 100;
   const SAFETY_MARGIN = 20;
   const R_SAFE = OBSTACLE_RADIUS + SAFETY_MARGIN;
   const ALPHA = 2.0;
   const CONNECTION_DIST = 120;
+
+  // Dynamic theme colors
+  const styles = getComputedStyle(document.documentElement);
+  let primaryColor = styles.getPropertyValue('--primary').trim();
+  let primaryRgb = styles.getPropertyValue('--primary-rgb').trim();
+
+  function readThemeColors() {
+    const s = getComputedStyle(document.documentElement);
+    primaryColor = s.getPropertyValue('--primary').trim();
+    primaryRgb = s.getPropertyValue('--primary-rgb').trim();
+  }
+
+  window.addEventListener('themechange', readThemeColors);
 
   let mouseX = -9999;
   let mouseY = -9999;
@@ -82,7 +96,7 @@
       agent.vy += Math.sin(agent.targetAngle) * 0.05;
 
       // 2. Speed clamp
-      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, MAX_SPEED);
+      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, NOMINAL_SPEED);
 
       // 3. CBF avoidance
       const dx = agent.x - ox;
@@ -110,8 +124,8 @@
         }
       }
 
-      // 4. Re-clamp speed (allow 1.5x during avoidance)
-      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, MAX_SPEED * 1.5);
+      // 4. Re-clamp speed (allow higher speed during avoidance)
+      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, MAX_SPEED);
 
       // 5. Integrate & wrap
       agent.x += agent.vx;
@@ -137,7 +151,7 @@
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < CONNECTION_DIST) {
           const alpha = (1 - dist / CONNECTION_DIST) * 0.15;
-          ctx.strokeStyle = `rgba(0, 255, 65, ${alpha})`;
+          ctx.strokeStyle = `rgba(${primaryRgb}, ${alpha})`;
           ctx.lineWidth = 0.5;
           ctx.beginPath();
           ctx.moveTo(agents[i].x, agents[i].y);
@@ -155,14 +169,14 @@
       // Inner circle: OBSTACLE_RADIUS
       ctx.beginPath();
       ctx.arc(obstacleX, obstacleY, OBSTACLE_RADIUS, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(0, 255, 65, 0.15)';
+      ctx.strokeStyle = `rgba(${primaryRgb}, 0.15)`;
       ctx.lineWidth = 1;
       ctx.stroke();
 
       // Outer circle: R_SAFE (safety margin)
       ctx.beginPath();
       ctx.arc(obstacleX, obstacleY, R_SAFE, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(0, 255, 65, 0.08)';
+      ctx.strokeStyle = `rgba(${primaryRgb}, 0.08)`;
       ctx.lineWidth = 1;
       ctx.stroke();
 
@@ -173,8 +187,8 @@
     for (const agent of agents) {
       ctx.beginPath();
       ctx.arc(agent.x, agent.y, 2, 0, Math.PI * 2);
-      ctx.fillStyle = '#00ff41';
-      ctx.shadowColor = '#00ff41';
+      ctx.fillStyle = primaryColor;
+      ctx.shadowColor = primaryColor;
       ctx.shadowBlur = 8;
       ctx.fill();
     }

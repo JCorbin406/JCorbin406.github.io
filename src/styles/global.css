@@ -1,19 +1,44 @@
 :root {
   --bg: #0a0a0a;
-  --green: #00ff41;
-  --green-dim: #00cc33;
+  --primary: #00ff41;
+  --primary-dim: #00cc33;
+  --primary-rgb: 0, 255, 65;
+  --green: var(--primary);
+  --green-dim: var(--primary-dim);
   --amber: #ffb000;
-  --panel-bg: rgba(0, 255, 65, 0.03);
-  --panel-border: rgba(0, 255, 65, 0.25);
+  --accent: var(--amber);
+  --panel-bg: rgba(var(--primary-rgb), 0.03);
+  --panel-border: rgba(var(--primary-rgb), 0.25);
   --text: #c0ffc8;
-  --text-dim: rgba(0, 255, 65, 0.5);
+  --text-dim: rgba(var(--primary-rgb), 0.5);
 
-  --glow-sm: 0 0 4px rgba(0, 255, 65, 0.4);
-  --glow-md: 0 0 8px rgba(0, 255, 65, 0.5), 0 0 16px rgba(0, 255, 65, 0.2);
-  --glow-lg: 0 0 10px rgba(0, 255, 65, 0.6), 0 0 30px rgba(0, 255, 65, 0.3), 0 0 60px rgba(0, 255, 65, 0.1);
+  --glow-sm: 0 0 4px rgba(var(--primary-rgb), 0.4);
+  --glow-md: 0 0 8px rgba(var(--primary-rgb), 0.5), 0 0 16px rgba(var(--primary-rgb), 0.2);
+  --glow-lg: 0 0 10px rgba(var(--primary-rgb), 0.6), 0 0 30px rgba(var(--primary-rgb), 0.3), 0 0 60px rgba(var(--primary-rgb), 0.1);
 
   --font-mono: 'JetBrains Mono', 'Courier New', monospace;
   --nav-height: 3.5rem;
+}
+
+html[data-theme="cyan"] {
+  --primary: #00d4ff;
+  --primary-dim: #00a8cc;
+  --primary-rgb: 0, 212, 255;
+  --text: #c0f0ff;
+}
+
+html[data-theme="red"] {
+  --primary: #ff073a;
+  --primary-dim: #cc052e;
+  --primary-rgb: 255, 7, 58;
+  --text: #ffc0c8;
+}
+
+html[data-theme="purple"] {
+  --primary: #bf40ff;
+  --primary-dim: #9933cc;
+  --primary-rgb: 191, 64, 255;
+  --text: #e0c0ff;
 }
 
 *, *::before, *::after {

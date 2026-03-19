@@ -28,7 +28,7 @@ const { title, authors, venue, year, link, bibtex } = Astro.props;
 <style>
   .pub-entry {
     padding: 1rem 0;
-    border-bottom: 1px solid rgba(0, 255, 65, 0.1);
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
   }
 
   .pub-entry:last-child {

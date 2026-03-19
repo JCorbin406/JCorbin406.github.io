@@ -41,8 +41,8 @@ const { title, description, tags = [], links = [] } = Astro.props;
   }
 
   .project-card:hover {
-    border-color: rgba(0, 255, 65, 0.5);
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.05);
+    border-color: rgba(var(--primary-rgb), 0.5);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.05);
   }
 
   .project-media {
@@ -70,7 +70,7 @@ const { title, description, tags = [], links = [] } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 255, 65, 0.02);
+    background: rgba(var(--primary-rgb), 0.02);
     font-size: 0.85rem;
   }
 

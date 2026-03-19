@@ -19,8 +19,8 @@ const { title, description, icon = '>' } = Astro.props;
   }
 
   .research-card:hover {
-    border-color: rgba(0, 255, 65, 0.5);
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.05);
+    border-color: rgba(var(--primary-rgb), 0.5);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.05);
   }
 
   .research-card h3 {

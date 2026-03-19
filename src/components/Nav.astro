@@ -27,6 +27,13 @@ function isActive(href: string, current: string): boolean {
       <span class="text-dim">cd</span>
     </span>
 
+    <div class="theme-picker" id="theme-picker">
+      <button class="swatch" data-theme="green" style="--swatch: #00ff41" aria-label="Green theme"></button>
+      <button class="swatch" data-theme="cyan" style="--swatch: #00d4ff" aria-label="Cyan theme"></button>
+      <button class="swatch" data-theme="red" style="--swatch: #ff073a" aria-label="Red theme"></button>
+      <button class="swatch" data-theme="purple" style="--swatch: #bf40ff" aria-label="Purple theme"></button>
+    </div>
+
     <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
       <span></span>
       <span></span>
@@ -57,6 +64,32 @@ function isActive(href: string, current: string): boolean {
     hamburger.setAttribute('aria-expanded', String(!expanded));
     navLinks.classList.toggle('open');
     hamburger.classList.toggle('open');
+  });
+
+  // Theme picker
+  const picker = document.getElementById('theme-picker')!;
+  const swatches = picker.querySelectorAll<HTMLButtonElement>('.swatch');
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'green';
+
+  function setActiveSwatch(theme: string) {
+    swatches.forEach(s => s.classList.toggle('active', s.dataset.theme === theme));
+  }
+
+  setActiveSwatch(currentTheme);
+
+  swatches.forEach(swatch => {
+    swatch.addEventListener('click', () => {
+      const theme = swatch.dataset.theme!;
+      if (theme === 'green') {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.removeItem('theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+      }
+      setActiveSwatch(theme);
+      window.dispatchEvent(new CustomEvent('themechange'));
+    });
   });
 </script>
 
@@ -114,6 +147,35 @@ function isActive(href: string, current: string): boolean {
     text-shadow: var(--glow-md);
   }
 
+  .theme-picker {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background: var(--swatch);
+    cursor: pointer;
+    padding: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .swatch:hover {
+    box-shadow: 0 0 8px var(--swatch);
+  }
+
+  .swatch.active {
+    border-color: #fff;
+    box-shadow: 0 0 8px var(--swatch);
+  }
+
   .hamburger {
     display: none;
     flex-direction: column;
@@ -147,8 +209,14 @@ function isActive(href: string, current: string): boolean {
   }
 
   @media (max-width: 768px) {
+    .theme-picker {
+      margin-left: auto;
+      margin-right: 0;
+    }
+
     .hamburger {
       display: flex;
+      margin-left: 0.5rem;
     }
 
     .nav-links {
