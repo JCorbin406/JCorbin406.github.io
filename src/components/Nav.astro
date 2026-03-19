@@ -27,13 +27,6 @@ function isActive(href: string, current: string): boolean {
       <span class="text-dim">cd</span>
     </span>
 
-    <div class="theme-picker" id="theme-picker">
-      <button class="swatch" data-theme="green" style="--swatch: #00ff41" aria-label="Green theme"></button>
-      <button class="swatch" data-theme="cyan" style="--swatch: #00d4ff" aria-label="Cyan theme"></button>
-      <button class="swatch" data-theme="red" style="--swatch: #ff073a" aria-label="Red theme"></button>
-      <button class="swatch" data-theme="purple" style="--swatch: #bf40ff" aria-label="Purple theme"></button>
-    </div>
-
     <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
       <span></span>
       <span></span>
@@ -52,6 +45,13 @@ function isActive(href: string, current: string): boolean {
         </li>
       ))}
     </ul>
+
+    <div class="theme-picker" id="theme-picker">
+      <button class="swatch" data-theme="green" style="--swatch: #00ff41" aria-label="Green theme"></button>
+      <button class="swatch" data-theme="cyan" style="--swatch: #00d4ff" aria-label="Cyan theme"></button>
+      <button class="swatch" data-theme="red" style="--swatch: #ff073a" aria-label="Red theme"></button>
+      <button class="swatch" data-theme="purple" style="--swatch: #bf40ff" aria-label="Purple theme"></button>
+    </div>
   </div>
 </nav>
 
@@ -152,7 +152,6 @@ function isActive(href: string, current: string): boolean {
     gap: 6px;
     align-items: center;
     margin-left: auto;
-    margin-right: 0.5rem;
     flex-shrink: 0;
   }
 
@@ -209,13 +208,12 @@ function isActive(href: string, current: string): boolean {
   }
 
   @media (max-width: 768px) {
-    .theme-picker {
-      margin-left: auto;
-      margin-right: 0;
-    }
-
     .hamburger {
       display: flex;
+      margin-left: auto;
+    }
+
+    .theme-picker {
       margin-left: 0.5rem;
     }
 

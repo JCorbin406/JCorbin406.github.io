@@ -1,13 +1,21 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PublicationEntry from '../components/PublicationEntry.astro';
+import PresentationEntry from '../components/PresentationEntry.astro';
 import pubs from '../data/publications.json';
+import presentations from '../data/presentations.json';
 
 // Group by year, sorted descending
 const years = [...new Set(pubs.map(p => p.year))].sort((a, b) => b - a);
 const grouped = years.map(year => ({
   year,
   papers: pubs.filter(p => p.year === year),
+}));
+
+const presYears = [...new Set(presentations.map(p => p.year))].sort((a, b) => b - a);
+const presGrouped = presYears.map(year => ({
+  year,
+  talks: presentations.filter(p => p.year === year),
 }));
 ---
 
@@ -27,6 +35,22 @@ const grouped = years.map(year => ({
               year={pub.year}
               link={pub.link || undefined}
               bibtex={pub.bibtex || undefined}
+            />
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <h1>// presentations</h1>
+
+    {presGrouped.map(group => (
+      <section class="section">
+        <h2>$ grep {group.year}</h2>
+        <div class="panel">
+          {group.talks.map(talk => (
+            <PresentationEntry
+              event={talk.event}
+              date={talk.date}
             />
           ))}
         </div>

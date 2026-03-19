@@ -1,0 +1,35 @@
+---
+interface Props {
+  event: string;
+  date: string;
+}
+
+const { event, date } = Astro.props;
+---
+
+<div class="pres-entry">
+  <div class="pres-event">{event}</div>
+  <div class="pres-date">{date}</div>
+</div>
+
+<style>
+  .pres-entry {
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(var(--primary-rgb), 0.1);
+  }
+
+  .pres-entry:last-child {
+    border-bottom: none;
+  }
+
+  .pres-event {
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 0.25rem;
+  }
+
+  .pres-date {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+</style>
