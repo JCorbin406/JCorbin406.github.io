@@ -1,5 +1,13 @@
 [
   {
+    "title": "Allocating Corrective Control to Mitigate Multi-agent Safety Violations Under Private Preferences",
+    "authors": "J. Corbin, S. H. Q. Li, J. Rogers",
+    "venue": "IEEE Robotics and Automation Letters (submitted)",
+    "year": 2026,
+    "link": "https://arxiv.org/abs/2601.12616",
+    "bibtex": "@article{corbin2026allocating,\n  title={Allocating Corrective Control to Mitigate Multi-agent Safety Violations Under Private Preferences},\n  author={Corbin, Johnathan and Li, Sarah H. Q. and Rogers, Jonathan},\n  journal={IEEE Robotics and Automation Letters},\n  year={2026},\n  note={Submitted. Preprint: arXiv:2601.12616}\n}"
+  },
+  {
     "title": "Paper submitted to US Journal for Hypersonics",
     "authors": "J. Corbin et al.",
     "venue": "US Journal for Hypersonics (submitted)",
