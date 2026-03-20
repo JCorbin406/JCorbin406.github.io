@@ -78,26 +78,143 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </section>
 
     <section class="section">
-      <h2>$ ls skills/</h2>
-      <div class="skills-grid">
-        <code>MATLAB</code>
-        <code>Python</code>
-        <code>C++</code>
-        <code>Java</code>
-        <code>ROS</code>
-        <code>LaTeX</code>
-        <code>Arduino</code>
-        <code>NX</code>
-        <code>Solidworks</code>
-        <code>COMSOL</code>
-        <code>Fusion 360</code>
-        <code>Orbital Mechanics</code>
-        <code>Additive Manufacturing</code>
-        <code>Machining</code>
-        <code>Robotics</code>
-        <code>Microcontrollers</code>
+      <h2>$ tree skills/ --info</h2>
+      <div class="panel skill-tree">
+        <p class="tree-hint">Click a directory to expand or collapse its contents.</p>
+        <div class="tree-root">skills/</div>
+
+        <details class="tree-category" open>
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">programming_languages/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Python</span><span class="tree-leader"></span><span class="tree-context">multi-agent sim, data analysis</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">MATLAB</span><span class="tree-leader"></span><span class="tree-context">control systems, orbital mechanics</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">C++</span><span class="tree-leader"></span><span class="tree-context">embedded systems, ROS nodes</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">Java</span><span class="tree-leader"></span><span class="tree-context">academic coursework</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">frameworks/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">ROS</span><span class="tree-leader"></span><span class="tree-context">multi-robot coordination</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Gazebo</span><span class="tree-leader"></span><span class="tree-context">robotics simulation</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">OpenCV</span><span class="tree-leader"></span><span class="tree-context">computer vision</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Simulink</span><span class="tree-leader"></span><span class="tree-context">controls, dynamics modeling</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">LaTeX</span><span class="tree-leader"></span><span class="tree-context">publications, proposals</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Arduino</span><span class="tree-leader"></span><span class="tree-context">sensor integration</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Git</span><span class="tree-leader"></span><span class="tree-context">version control</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Linux</span><span class="tree-leader"></span><span class="tree-context">Ubuntu, CLI, system admin</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">LabVIEW</span><span class="tree-leader"></span><span class="tree-context">test automation, DAQ</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">KiCad</span><span class="tree-leader"></span><span class="tree-context">PCB layout, schematic capture</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">electronics/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Circuit Design</span><span class="tree-leader"></span><span class="tree-context">schematic capture, analysis</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">PCB Design</span><span class="tree-leader"></span><span class="tree-context">layout, routing</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">RF Theory</span><span class="tree-leader"></span><span class="tree-context">antennas, signal propagation</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">cad_simulation/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">NX</span><span class="tree-leader"></span><span class="tree-context">structural analysis</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Solidworks</span><span class="tree-leader"></span><span class="tree-context">mechanism design</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">COMSOL</span><span class="tree-leader"></span><span class="tree-context">multiphysics sim</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">Fusion 360</span><span class="tree-leader"></span><span class="tree-context">rapid prototyping</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">traditional_manufacturing/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">CNC Milling</span><span class="tree-leader"></span><span class="tree-context">3-axis, fixture design</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Lathe</span><span class="tree-leader"></span><span class="tree-context">manual & CNC turning</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Waterjet</span><span class="tree-leader"></span><span class="tree-context">abrasive cutting</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Laser Cutter</span><span class="tree-leader"></span><span class="tree-context">sheet stock, engraving</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Bandsaw</span><span class="tree-leader"></span><span class="tree-context">rough stock prep</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Drill Press</span><span class="tree-leader"></span><span class="tree-context">precision hole-making</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Welding</span><span class="tree-leader"></span><span class="tree-context">MIG, TIG</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">Hand Tools</span><span class="tree-leader"></span><span class="tree-context">deburring, tapping, layout</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">additive_manufacturing/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">FDM / 3D Printing</span><span class="tree-leader"></span><span class="tree-context">PLA, PETG, ABS</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">SLS</span><span class="tree-leader"></span><span class="tree-context">selective laser sintering</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">SLA / Resin</span><span class="tree-leader"></span><span class="tree-context">stereolithography, DLP</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Metal Printing</span><span class="tree-leader"></span><span class="tree-context">DMLS, wire arc AM</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">Post-Processing</span><span class="tree-leader"></span><span class="tree-context">support removal, curing, finishing</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">metrology_inspection/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">GD&T</span><span class="tree-leader"></span><span class="tree-context">geometric dimensioning & tolerancing</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Engineering Drawings</span><span class="tree-leader"></span><span class="tree-context">ASME Y14.5, detail & assembly</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">Metrology</span><span class="tree-leader"></span><span class="tree-context">calipers, micrometers, CMM</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">testing/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Experiment Design</span><span class="tree-leader"></span><span class="tree-context">DOE, test planning</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Instrumentation</span><span class="tree-leader"></span><span class="tree-context">strain gauges, thermocouples, laser distance</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">MIL-Spec Testing</span><span class="tree-leader"></span><span class="tree-context">shock, vibration, environmental</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">Rapid Prototyping</span><span class="tree-leader"></span><span class="tree-context">concept-to-test iteration</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">ai_ml/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Search Algorithms</span><span class="tree-leader"></span><span class="tree-context">A*, Dijkstra's, minimax</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">Machine Learning</span><span class="tree-leader"></span><span class="tree-context">supervised, unsupervised, reinforcement learning</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">uas/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">FPV Racing</span><span class="tree-leader"></span><span class="tree-context">competitive drone racing</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Multirotors</span><span class="tree-leader"></span><span class="tree-context">build, tune, fly</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Fixed-Wing</span><span class="tree-leader"></span><span class="tree-context">build & fly RC aircraft</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Flight Controllers</span><span class="tree-leader"></span><span class="tree-context">Betaflight, PX4, ArduPilot, Pixhawk</span></div>
+            <div class="tree-item"><span class="tree-branch">│   ├── </span><span class="tree-file">Ground Stations</span><span class="tree-leader"></span><span class="tree-context">QGroundControl, Mission Planner</span></div>
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">Soldering</span><span class="tree-leader"></span><span class="tree-context">ESCs, flight stacks, electronics assembly</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">├── </span><span class="tree-dir">game_dev/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">│   └── </span><span class="tree-file">Unity</span><span class="tree-leader"></span><span class="tree-context">video game design</span></div>
+          </div>
+        </details>
+
+        <details class="tree-category">
+          <summary><span class="tree-branch">└── </span><span class="tree-dir">domains/</span></summary>
+          <div class="tree-children">
+            <div class="tree-item"><span class="tree-branch">    ├── </span><span class="tree-file">Mechanical Design</span></div>
+            <div class="tree-item"><span class="tree-branch">    ├── </span><span class="tree-file">Orbital Mechanics</span></div>
+            <div class="tree-item"><span class="tree-branch">    ├── </span><span class="tree-file">Fluid Mechanics</span></div>
+            <div class="tree-item"><span class="tree-branch">    ├── </span><span class="tree-file">Aerodynamics</span></div>
+            <div class="tree-item"><span class="tree-branch">    ├── </span><span class="tree-file">Controls</span></div>
+            <div class="tree-item"><span class="tree-branch">    ├── </span><span class="tree-file">Propulsion Systems</span></div>
+            <div class="tree-item"><span class="tree-branch">    ├── </span><span class="tree-file">Robotics</span></div>
+            <div class="tree-item"><span class="tree-branch">    └── </span><span class="tree-file">Microcontrollers</span></div>
+          </div>
+        </details>
       </div>
     </section>
+
 
     <section class="section">
       <h2>$ download</h2>
@@ -126,14 +243,85 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     margin-bottom: 0;
   }
 
-  .skills-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  /* ── Option B: Interactive Tree ── */
+  .skill-tree {
+    font-size: 0.85rem;
+    line-height: 1.6;
   }
 
-  .skills-grid code {
+  .tree-hint {
+    color: var(--text-dim);
     font-size: 0.8rem;
+    margin: 0 0 0.75rem 0;
+    font-style: italic;
+  }
+
+  .tree-root {
+    color: var(--amber);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .tree-category {
+    margin: 0;
+  }
+
+  .tree-category summary {
+    cursor: pointer;
+    list-style: none;
+    white-space: pre;
+  }
+
+  .tree-category summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .tree-dir {
+    color: var(--amber);
+    font-weight: 700;
+  }
+
+  .tree-category summary .tree-dir::before {
+    content: '▸ ';
+    font-size: 0.7em;
+  }
+
+  .tree-category[open] summary .tree-dir::before {
+    content: '▾ ';
+    font-size: 0.7em;
+  }
+
+  .tree-children {
+    white-space: pre;
+  }
+
+  .tree-branch {
+    color: var(--primary);
+    user-select: none;
+  }
+
+  .tree-file {
+    color: var(--text);
+  }
+
+  .tree-leader {
+    display: inline;
+  }
+
+  .tree-leader::after {
+    content: ' ·················· ';
+    color: var(--text-dim);
+    font-size: 0.75em;
+  }
+
+  .tree-context {
+    color: var(--text-dim);
+    font-size: 0.8em;
+    font-style: italic;
+  }
+
+  .tree-item {
+    white-space: pre;
   }
 
   .cv-link {
@@ -213,3 +401,4 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   }
 </style>
+
