@@ -50,6 +50,85 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
       <button class="reset-btn" id="reset-btn">[reset]</button>
     </div>
+
+    <div class="math-section">
+      <h2 class="section-title">// formulation</h2>
+
+      <div class="math-block">
+        <h3 class="math-heading">System model</h3>
+        <p class="math-text">
+          Each agent is a single-integrator: <span class="math">ẋ = u</span>, where
+          <span class="math">x ∈ ℝ²</span> is position and <span class="math">u ∈ ℝ²</span>
+          is the control (velocity) input we choose each timestep.
+        </p>
+      </div>
+
+      <div class="math-block">
+        <h3 class="math-heading">Barrier function</h3>
+        <p class="math-text">
+          Given a circular obstacle at <span class="math">o</span> with safe radius
+          <span class="math">r</span>, define the barrier function:
+        </p>
+        <div class="math-display">h(x) = ‖x − o‖ − r</div>
+        <p class="math-text">
+          The set <span class="math">&#123;x : h(x) ≥ 0&#125;</span> is the safe region.
+          When <span class="math">h &gt; 0</span> the agent is outside the obstacle;
+          <span class="math">h = 0</span> is the boundary; <span class="math">h &lt; 0</span>
+          means violation.
+        </p>
+      </div>
+
+      <div class="math-block">
+        <h3 class="math-heading">CBF condition</h3>
+        <p class="math-text">
+          To keep the system safe, we require the barrier to satisfy:
+        </p>
+        <div class="math-display">ḣ(x, u) + α · h(x) ≥ 0</div>
+        <p class="math-text">
+          Expanding the time derivative: <span class="math">ḣ = ∇h · u</span>, where the
+          gradient <span class="math">∇h = (x − o) / ‖x − o‖</span> is the unit normal
+          pointing away from the obstacle. The parameter <span class="math">α &gt; 0</span>
+          controls how aggressively the agent is pushed away &mdash; larger α forces earlier,
+          stronger deflection.
+        </p>
+      </div>
+
+      <div class="math-block">
+        <h3 class="math-heading">Quadratic program</h3>
+        <p class="math-text">
+          Each agent has a nominal (desired) velocity <span class="math">u_nom</span> from
+          its wander behavior. We find the closest safe velocity by solving:
+        </p>
+        <div class="math-display">
+          min<sub>u</sub> ‖u − u_nom‖²<br/>
+          s.t. ∇h · u + α · h(x) ≥ 0
+        </div>
+        <p class="math-text">
+          This is a QP with a single linear constraint on a quadratic cost. If the nominal
+          input already satisfies the constraint, it passes through unchanged. Otherwise,
+          the solution projects onto the constraint boundary.
+        </p>
+      </div>
+
+      <div class="math-block">
+        <h3 class="math-heading">Closed-form solution</h3>
+        <p class="math-text">
+          Let <span class="math">a = ∇h</span> (unit normal) and
+          <span class="math">b = α · h(x)</span>. Evaluate the constraint at the nominal:
+        </p>
+        <div class="math-display">φ = a · u_nom + b</div>
+        <p class="math-text">If <span class="math">φ ≥ 0</span>, the nominal is safe and
+          <span class="math">u* = u_nom</span>. Otherwise, the optimal Lagrange multiplier
+          is <span class="math">λ = −φ / (a · a) = −φ</span> (since
+          <span class="math">‖a‖ = 1</span>), giving:
+        </p>
+        <div class="math-display">u* = u_nom − φ · ∇h</div>
+        <p class="math-text">
+          This is the minimum-norm correction &mdash; the agent deviates from its desired
+          path only as much as needed to stay safe.
+        </p>
+      </div>
+    </div>
   </div>
 </BaseLayout>
 
@@ -526,6 +605,62 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .reset-btn:hover {
     color: var(--primary);
     border-color: var(--primary);
+  }
+
+  /* Math section */
+  .math-section {
+    margin-top: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-shadow: var(--glow-md);
+    margin-bottom: 1.25rem;
+  }
+
+  .math-block {
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    background: var(--panel-bg);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .math-heading {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .math-text {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .math-text + .math-display {
+    margin-top: 0.5rem;
+  }
+
+  .math-display + .math-text {
+    margin-top: 0.5rem;
+  }
+
+  .math {
+    color: var(--primary);
+    font-style: italic;
+  }
+
+  .math-display {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--primary);
+    text-align: center;
+    padding: 0.6rem 0;
+    line-height: 1.8;
   }
 
   /* Mobile */
