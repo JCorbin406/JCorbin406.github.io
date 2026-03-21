@@ -6,9 +6,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <div class="page-container">
     <h1 class="page-title">// simulation</h1>
     <p class="text-dim intro">
-      Control Barrier Functions (CBFs) enforce safety constraints on autonomous agents in real time.
-      Below, each agent wanders freely but is mathematically guaranteed to avoid the obstacle.
-      Move your cursor (or touch) to be the obstacle.
+      Control Barrier Functions (CBFs) enforce safety constraints by solving a QP that minimally
+      modifies each agent's nominal velocity to satisfy ḣ + α·h ≥ 0. Move your cursor
+      (or touch) to be the obstacle.
     </p>
 
     <div class="terminal-window">
@@ -38,11 +38,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <span class="slider-value" id="sv-speed">1.125</span>
         </div>
         <div class="slider-row">
-          <label class="slider-label" for="sl-maxspeed"># max_speed</label>
-          <input type="range" id="sl-maxspeed" min="0.5" max="5.0" value="2.0" step="0.25" />
-          <span class="slider-value" id="sv-maxspeed">2.0</span>
-        </div>
-        <div class="slider-row">
           <label class="slider-label" for="sl-radius"># obstacle_radius</label>
           <input type="range" id="sl-radius" min="30" max="200" value="100" step="5" />
           <span class="slider-value" id="sv-radius">100</span>
@@ -67,14 +62,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const DEFAULTS = {
     agents: 30,
     speed: 1.125,
-    maxSpeed: 2.0,
     radius: 100,
     alpha: 2.0,
   };
 
   let numAgents = DEFAULTS.agents;
   let nominalSpeed = DEFAULTS.speed;
-  let maxSpeed = DEFAULTS.maxSpeed;
   let obstacleRadius = DEFAULTS.radius;
   let alpha = DEFAULTS.alpha;
   const SAFETY_MARGIN = 20;
@@ -84,7 +77,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   const sliders: Record<string, { input: HTMLInputElement; display: HTMLElement; key: keyof typeof DEFAULTS }> = {
     agents:   { input: document.getElementById('sl-agents') as HTMLInputElement, display: document.getElementById('sv-agents')!, key: 'agents' },
     speed:    { input: document.getElementById('sl-speed') as HTMLInputElement, display: document.getElementById('sv-speed')!, key: 'speed' },
-    maxSpeed: { input: document.getElementById('sl-maxspeed') as HTMLInputElement, display: document.getElementById('sv-maxspeed')!, key: 'maxSpeed' },
     radius:   { input: document.getElementById('sl-radius') as HTMLInputElement, display: document.getElementById('sv-radius')!, key: 'radius' },
     alpha:    { input: document.getElementById('sl-alpha') as HTMLInputElement, display: document.getElementById('sv-alpha')!, key: 'alpha' },
   };
@@ -92,13 +84,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   function syncFromSliders() {
     const newCount = parseInt(sliders.agents.input.value);
     nominalSpeed = parseFloat(sliders.speed.input.value);
-    maxSpeed = parseFloat(sliders.maxSpeed.input.value);
     obstacleRadius = parseFloat(sliders.radius.input.value);
     alpha = parseFloat(sliders.alpha.input.value);
 
     sliders.agents.display.textContent = String(newCount);
     sliders.speed.display.textContent = nominalSpeed.toFixed(3);
-    sliders.maxSpeed.display.textContent = maxSpeed.toFixed(2);
     sliders.radius.display.textContent = String(obstacleRadius);
     sliders.alpha.display.textContent = alpha.toFixed(1);
 
@@ -120,7 +110,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   document.getElementById('reset-btn')!.addEventListener('click', () => {
     sliders.agents.input.value = String(DEFAULTS.agents);
     sliders.speed.input.value = String(DEFAULTS.speed);
-    sliders.maxSpeed.input.value = String(DEFAULTS.maxSpeed);
     sliders.radius.input.value = String(DEFAULTS.radius);
     sliders.alpha.input.value = String(DEFAULTS.alpha);
     syncFromSliders();
@@ -237,12 +226,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     return [mouseX, mouseY];
   }
 
-  function clampSpeed(vx: number, vy: number, max: number): [number, number] {
-    const speed = Math.sqrt(vx * vx + vy * vy);
-    if (speed > max) return [vx / speed * max, vy / speed * max];
-    return [vx, vy];
-  }
-
   // --- Simulation loop ---
   let obstacleX = -9999;
   let obstacleY = -9999;
@@ -254,41 +237,44 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     obstacleY = oy;
 
     for (const agent of agents) {
+      // 1. Compute nominal control (wander behavior)
       agent.targetAngle += (Math.random() - 0.5) * 0.3;
-      agent.vx += Math.cos(agent.targetAngle) * 0.05;
-      agent.vy += Math.sin(agent.targetAngle) * 0.05;
+      let ux = agent.vx + Math.cos(agent.targetAngle) * 0.05;
+      let uy = agent.vy + Math.sin(agent.targetAngle) * 0.05;
 
-      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, nominalSpeed);
+      // Clamp nominal to desired speed
+      const uNomSpeed = Math.sqrt(ux * ux + uy * uy);
+      if (uNomSpeed > nominalSpeed) {
+        ux = ux / uNomSpeed * nominalSpeed;
+        uy = uy / uNomSpeed * nominalSpeed;
+      }
 
+      // 2. CBF-QP: min ||u - u_nom||^2  s.t.  ∇h·u + α·h ≥ 0
       const dx = agent.x - ox;
       const dy = agent.y - oy;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist > 0 && dist < rSafe * 3) {
-        const nx = dx / dist;
+        const nx = dx / dist;  // ∇h (unit normal)
         const ny = dy / dist;
-        const h = dist - rSafe;
-        const vDotN = agent.vx * nx + agent.vy * ny;
-        const constraint = vDotN + alpha * h;
+        const h = dist - rSafe; // barrier value
 
-        if (constraint < 0) {
-          const correction = -constraint + 0.5;
-          agent.vx += nx * correction;
-          agent.vy += ny * correction;
-        }
+        const phi = (ux * nx + uy * ny) + alpha * h; // constraint value
 
-        if (h < 0) {
-          const push = (-h / rSafe) * 2;
-          agent.vx += nx * push;
-          agent.vy += ny * push;
+        if (phi < 0) {
+          // Project: u* = u_nom - phi * ∇h  (since ||∇h||² = 1)
+          ux -= phi * nx;
+          uy -= phi * ny;
         }
       }
 
-      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, maxSpeed);
-
+      // 3. Integrate (no post-CBF speed clamp)
+      agent.vx = ux;
+      agent.vy = uy;
       agent.x += agent.vx;
       agent.y += agent.vy;
 
+      // Wrap
       if (agent.x < 0) agent.x += cw;
       if (agent.x > cw) agent.x -= cw;
       if (agent.y < 0) agent.y += ch;
