@@ -338,7 +338,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         const ny = dy / dist;
         const h = dist - rSafe; // barrier value
 
-        const phi = (ux * nx + uy * ny) + alpha * h; // constraint value
+        // Scale α by 1/rSafe so pixel-scale h and velocity-scale u are comparable
+        const phi = (ux * nx + uy * ny) + (alpha / rSafe) * h; // constraint value
 
         if (phi < 0) {
           // Project: u* = u_nom - phi * ∇h  (since ||∇h||² = 1)
