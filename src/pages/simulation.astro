@@ -88,8 +88,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           Expanding the time derivative: <span class="math">ḣ = ∇h · u</span>, where the
           gradient <span class="math">∇h = (x − o) / ‖x − o‖</span> is the unit normal
           pointing away from the obstacle. The parameter <span class="math">α &gt; 0</span>
-          controls how aggressively the agent is pushed away &mdash; larger α forces earlier,
-          stronger deflection.
+          controls how permissive the barrier is &mdash; larger α allows agents to cut closer
+          before deflecting, while smaller α forces earlier, more conservative avoidance.
         </p>
       </div>
 
