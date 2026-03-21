@@ -1,0 +1,563 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Simulation | Jack Corbin" hideParticles={true}>
+  <div class="page-container">
+    <h1 class="page-title">// simulation</h1>
+    <p class="text-dim intro">
+      Control Barrier Functions (CBFs) enforce safety constraints on autonomous agents in real time.
+      Below, each agent wanders freely but is mathematically guaranteed to avoid the obstacle.
+      Move your cursor (or touch) to be the obstacle.
+    </p>
+
+    <div class="terminal-window">
+      <div class="terminal-titlebar">
+        <span class="window-dots">
+          <span class="dot dot-red"></span>
+          <span class="dot dot-yellow"></span>
+          <span class="dot dot-green"></span>
+        </span>
+        <span class="terminal-title">jack@corbin:~$ ./cbf_sim</span>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <canvas id="sim-canvas"></canvas>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="controls-grid">
+        <div class="slider-row">
+          <label class="slider-label" for="sl-agents"># agents</label>
+          <input type="range" id="sl-agents" min="5" max="100" value="30" step="1" />
+          <span class="slider-value" id="sv-agents">30</span>
+        </div>
+        <div class="slider-row">
+          <label class="slider-label" for="sl-speed"># nominal_speed</label>
+          <input type="range" id="sl-speed" min="0.25" max="3.0" value="1.125" step="0.125" />
+          <span class="slider-value" id="sv-speed">1.125</span>
+        </div>
+        <div class="slider-row">
+          <label class="slider-label" for="sl-maxspeed"># max_speed</label>
+          <input type="range" id="sl-maxspeed" min="0.5" max="5.0" value="2.0" step="0.25" />
+          <span class="slider-value" id="sv-maxspeed">2.0</span>
+        </div>
+        <div class="slider-row">
+          <label class="slider-label" for="sl-radius"># obstacle_radius</label>
+          <input type="range" id="sl-radius" min="30" max="200" value="100" step="5" />
+          <span class="slider-value" id="sv-radius">100</span>
+        </div>
+        <div class="slider-row">
+          <label class="slider-label" for="sl-alpha"># alpha (CBF gain)</label>
+          <input type="range" id="sl-alpha" min="0.1" max="10.0" value="2.0" step="0.1" />
+          <span class="slider-value" id="sv-alpha">2.0</span>
+        </div>
+      </div>
+      <button class="reset-btn" id="reset-btn">[reset]</button>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  const canvas = document.getElementById('sim-canvas') as HTMLCanvasElement;
+  const ctx = canvas.getContext('2d')!;
+  const terminalBody = document.getElementById('terminal-body')!;
+
+  // --- Parameters (mutable) ---
+  const DEFAULTS = {
+    agents: 30,
+    speed: 1.125,
+    maxSpeed: 2.0,
+    radius: 100,
+    alpha: 2.0,
+  };
+
+  let numAgents = DEFAULTS.agents;
+  let nominalSpeed = DEFAULTS.speed;
+  let maxSpeed = DEFAULTS.maxSpeed;
+  let obstacleRadius = DEFAULTS.radius;
+  let alpha = DEFAULTS.alpha;
+  const SAFETY_MARGIN = 20;
+  const CONNECTION_DIST = 120;
+
+  // --- Slider bindings ---
+  const sliders: Record<string, { input: HTMLInputElement; display: HTMLElement; key: keyof typeof DEFAULTS }> = {
+    agents:   { input: document.getElementById('sl-agents') as HTMLInputElement, display: document.getElementById('sv-agents')!, key: 'agents' },
+    speed:    { input: document.getElementById('sl-speed') as HTMLInputElement, display: document.getElementById('sv-speed')!, key: 'speed' },
+    maxSpeed: { input: document.getElementById('sl-maxspeed') as HTMLInputElement, display: document.getElementById('sv-maxspeed')!, key: 'maxSpeed' },
+    radius:   { input: document.getElementById('sl-radius') as HTMLInputElement, display: document.getElementById('sv-radius')!, key: 'radius' },
+    alpha:    { input: document.getElementById('sl-alpha') as HTMLInputElement, display: document.getElementById('sv-alpha')!, key: 'alpha' },
+  };
+
+  function syncFromSliders() {
+    const newCount = parseInt(sliders.agents.input.value);
+    nominalSpeed = parseFloat(sliders.speed.input.value);
+    maxSpeed = parseFloat(sliders.maxSpeed.input.value);
+    obstacleRadius = parseFloat(sliders.radius.input.value);
+    alpha = parseFloat(sliders.alpha.input.value);
+
+    sliders.agents.display.textContent = String(newCount);
+    sliders.speed.display.textContent = nominalSpeed.toFixed(3);
+    sliders.maxSpeed.display.textContent = maxSpeed.toFixed(2);
+    sliders.radius.display.textContent = String(obstacleRadius);
+    sliders.alpha.display.textContent = alpha.toFixed(1);
+
+    // Incremental agent add/remove
+    if (newCount > numAgents) {
+      for (let i = numAgents; i < newCount; i++) {
+        agents.push(createAgent());
+      }
+    } else if (newCount < numAgents) {
+      agents.length = newCount;
+    }
+    numAgents = newCount;
+  }
+
+  for (const s of Object.values(sliders)) {
+    s.input.addEventListener('input', syncFromSliders);
+  }
+
+  document.getElementById('reset-btn')!.addEventListener('click', () => {
+    sliders.agents.input.value = String(DEFAULTS.agents);
+    sliders.speed.input.value = String(DEFAULTS.speed);
+    sliders.maxSpeed.input.value = String(DEFAULTS.maxSpeed);
+    sliders.radius.input.value = String(DEFAULTS.radius);
+    sliders.alpha.input.value = String(DEFAULTS.alpha);
+    syncFromSliders();
+  });
+
+  // --- Theme ---
+  let primaryColor = '';
+  let primaryRgb = '';
+  let bgColor = '';
+
+  function readThemeColors() {
+    const s = getComputedStyle(document.documentElement);
+    primaryColor = s.getPropertyValue('--primary').trim();
+    primaryRgb = s.getPropertyValue('--primary-rgb').trim();
+    bgColor = s.getPropertyValue('--bg').trim();
+  }
+  readThemeColors();
+  window.addEventListener('themechange', readThemeColors);
+
+  // --- Canvas sizing ---
+  let cw = 0;
+  let ch = 0;
+  const dpr = window.devicePixelRatio || 1;
+
+  function resizeCanvas() {
+    const rect = terminalBody.getBoundingClientRect();
+    cw = rect.width;
+    ch = rect.height;
+    canvas.width = cw * dpr;
+    canvas.height = ch * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  const ro = new ResizeObserver(resizeCanvas);
+  ro.observe(terminalBody);
+  resizeCanvas();
+
+  // --- Mouse / touch ---
+  let mouseX = -9999;
+  let mouseY = -9999;
+  let virtualAngle = 0;
+  let hasTouch = false;
+  const isMobile = window.innerWidth < 768;
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    mouseX = -9999;
+    mouseY = -9999;
+  });
+
+  canvas.addEventListener('touchstart', (e) => {
+    hasTouch = true;
+    updateTouch(e);
+  }, { passive: true });
+
+  canvas.addEventListener('touchmove', (e) => {
+    updateTouch(e);
+  }, { passive: true });
+
+  canvas.addEventListener('touchend', () => {
+    hasTouch = false;
+    mouseX = -9999;
+    mouseY = -9999;
+  });
+
+  function updateTouch(e: TouchEvent) {
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches[0];
+    mouseX = t.clientX - rect.left;
+    mouseY = t.clientY - rect.top;
+  }
+
+  // --- Agents ---
+  interface Agent {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    targetAngle: number;
+  }
+
+  let agents: Agent[] = [];
+
+  function createAgent(): Agent {
+    const angle = Math.random() * Math.PI * 2;
+    return {
+      x: Math.random() * (cw || 600),
+      y: Math.random() * (ch || 400),
+      vx: Math.cos(angle) * 0.5,
+      vy: Math.sin(angle) * 0.5,
+      targetAngle: angle,
+    };
+  }
+
+  function initAgents() {
+    agents = [];
+    for (let i = 0; i < numAgents; i++) {
+      agents.push(createAgent());
+    }
+  }
+
+  function getObstacle(): [number, number] {
+    if (isMobile && !hasTouch) {
+      virtualAngle += 0.005;
+      const cx = cw / 2 + Math.cos(virtualAngle) * cw * 0.2;
+      const cy = ch / 2 + Math.sin(virtualAngle * 0.7) * ch * 0.15;
+      return [cx, cy];
+    }
+    return [mouseX, mouseY];
+  }
+
+  function clampSpeed(vx: number, vy: number, max: number): [number, number] {
+    const speed = Math.sqrt(vx * vx + vy * vy);
+    if (speed > max) return [vx / speed * max, vy / speed * max];
+    return [vx, vy];
+  }
+
+  // --- Simulation loop ---
+  let obstacleX = -9999;
+  let obstacleY = -9999;
+
+  function update() {
+    const rSafe = obstacleRadius + SAFETY_MARGIN;
+    const [ox, oy] = getObstacle();
+    obstacleX = ox;
+    obstacleY = oy;
+
+    for (const agent of agents) {
+      agent.targetAngle += (Math.random() - 0.5) * 0.3;
+      agent.vx += Math.cos(agent.targetAngle) * 0.05;
+      agent.vy += Math.sin(agent.targetAngle) * 0.05;
+
+      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, nominalSpeed);
+
+      const dx = agent.x - ox;
+      const dy = agent.y - oy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (dist > 0 && dist < rSafe * 3) {
+        const nx = dx / dist;
+        const ny = dy / dist;
+        const h = dist - rSafe;
+        const vDotN = agent.vx * nx + agent.vy * ny;
+        const constraint = vDotN + alpha * h;
+
+        if (constraint < 0) {
+          const correction = -constraint + 0.5;
+          agent.vx += nx * correction;
+          agent.vy += ny * correction;
+        }
+
+        if (h < 0) {
+          const push = (-h / rSafe) * 2;
+          agent.vx += nx * push;
+          agent.vy += ny * push;
+        }
+      }
+
+      [agent.vx, agent.vy] = clampSpeed(agent.vx, agent.vy, maxSpeed);
+
+      agent.x += agent.vx;
+      agent.y += agent.vy;
+
+      if (agent.x < 0) agent.x += cw;
+      if (agent.x > cw) agent.x -= cw;
+      if (agent.y < 0) agent.y += ch;
+      if (agent.y > ch) agent.y -= ch;
+    }
+  }
+
+  function draw() {
+    // Trail clear using theme bg
+    const bgRgba = bgColor ? bgColor : '#0a0a0a';
+    ctx.fillStyle = hexToRgba(bgRgba, 0.15);
+    ctx.fillRect(0, 0, cw, ch);
+
+    // Connection lines (skip if > 60 agents for performance)
+    if (numAgents <= 60) {
+      for (let i = 0; i < agents.length; i++) {
+        for (let j = i + 1; j < agents.length; j++) {
+          const dx = agents[i].x - agents[j].x;
+          const dy = agents[i].y - agents[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONNECTION_DIST) {
+            const a = (1 - dist / CONNECTION_DIST) * 0.15;
+            ctx.strokeStyle = `rgba(${primaryRgb}, ${a})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(agents[i].x, agents[i].y);
+            ctx.lineTo(agents[j].x, agents[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    // Obstacle circles
+    const showCircle = isMobile || obstacleX !== -9999;
+    if (showCircle) {
+      const rSafe = obstacleRadius + SAFETY_MARGIN;
+      ctx.setLineDash([6, 4]);
+
+      ctx.beginPath();
+      ctx.arc(obstacleX, obstacleY, obstacleRadius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${primaryRgb}, 0.3)`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(obstacleX, obstacleY, rSafe, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${primaryRgb}, 0.15)`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+    }
+
+    // Agents
+    for (const agent of agents) {
+      ctx.beginPath();
+      ctx.arc(agent.x, agent.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = primaryColor;
+      ctx.shadowColor = primaryColor;
+      ctx.shadowBlur = 8;
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  function hexToRgba(hex: string, a: number): string {
+    // Handle #rrggbb
+    if (hex.startsWith('#') && hex.length === 7) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+    return `rgba(10, 10, 10, ${a})`;
+  }
+
+  function loop() {
+    update();
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  initAgents();
+  loop();
+</script>
+
+<style>
+  .page-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: calc(var(--nav-height) + 2rem) 1.5rem 3rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-shadow: var(--glow-md);
+    margin-bottom: 0.75rem;
+  }
+
+  .intro {
+    max-width: 700px;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    font-size: 0.85rem;
+  }
+
+  /* Terminal window */
+  .terminal-window {
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--panel-bg);
+  }
+
+  .terminal-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(var(--primary-rgb), 0.06);
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  .window-dots {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #28c840; }
+
+  .terminal-title {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .terminal-body {
+    aspect-ratio: 16 / 9;
+    position: relative;
+  }
+
+  #sim-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: none;
+  }
+
+  #sim-canvas:hover {
+    cursor: none;
+  }
+
+  /* Controls */
+  .controls-panel {
+    margin-top: 1rem;
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    background: var(--panel-bg);
+    padding: 1rem 1.25rem;
+  }
+
+  .controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 2rem;
+  }
+
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .slider-label {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    min-width: 140px;
+  }
+
+  .slider-value {
+    font-size: 0.75rem;
+    color: var(--primary);
+    min-width: 45px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--panel-border);
+    border-radius: 2px;
+    outline: none;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(var(--primary-rgb), 0.5);
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 6px rgba(var(--primary-rgb), 0.5);
+  }
+
+  input[type="range"]::-moz-range-track {
+    height: 4px;
+    background: var(--panel-border);
+    border-radius: 2px;
+  }
+
+  .reset-btn {
+    margin-top: 0.75rem;
+    background: none;
+    border: 1px solid var(--panel-border);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .reset-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .terminal-body {
+      aspect-ratio: 4 / 3;
+    }
+
+    .controls-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .slider-label {
+      min-width: 120px;
+    }
+
+    #sim-canvas {
+      cursor: default;
+    }
+  }
+</style>
